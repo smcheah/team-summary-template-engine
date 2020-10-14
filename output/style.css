@@ -1,0 +1,22 @@
+body {
+    background-image: url("./pattern.jpeg");
+}
+.jumbotron {
+    background-color: #0D1321;
+    color: white;
+}
+.card-header {
+    background-color: #afe0ce;
+    text-align: center;
+}
+.card {
+    margin: 5px 3%;
+    min-width: 300px;
+}
+.card-body {
+    background-color: #ffeddf;
+}
+.team-area {
+    display: flex;
+    flex-wrap: wrap;
+}

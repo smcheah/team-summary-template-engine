@@ -1,24 +1,24 @@
 const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
+
 const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
+// const util = require('util');
 
 const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
-
-// Write code to use inquirer to gather information about the development team members,
-// and to create objects for each team member (using the correct classes as blueprints!)
+// const writeFileAsync = util.promisify(fs.writeFile);
 
 function whichRole() {
 	return inquirer.prompt([
 		{
 			type: "list",
-			name: "roles",
-			message: "which of the roles below are in your team?",
+			name: "role",
+			message: "Which role would you like to input?",
 			choices: [
 				{
 					name: "Manager",
@@ -96,11 +96,11 @@ Answer the prompts to customise your team summary page!
 		const input = await whichRole();
         const { name, id, email } = await employeeQ();
         
-		if (input.roles === "manager") {
+		if (input.role === "manager") {
 		    const { officeNumber } = await managerQ();
 		    const manager = new Manager(name, id, email, officeNumber)
 		    employees.push(manager)
-		} else if (input.roles === "engineer") {
+		} else if (input.role === "engineer") {
 		    const { github } = await engineerQ();
 		    const engineer = new Engineer(name, id, email, github)
 		    employees.push(engineer)
@@ -113,6 +113,16 @@ Answer the prompts to customise your team summary page!
         const { again } = await addAnother();
         if (again === true) {
             return init();
+        } else {
+            console.log(employees)
+            // render(employees);
+            fs.writeFile(outputPath, render(employees), (err) => {
+                if (err) {
+                    console.log(err)
+                } else {
+                    console.log(`Success! HTML file created. Please see the output folder.`)
+                }
+            })
         }
 	} catch (err) {
 		console.log(`Error: ${err}`);
@@ -123,22 +133,26 @@ const employees = [];
 
 init();
 
-// console.log("EMPLOYEES ARRAY: ", employees)
-
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will
 // generate and return a block of HTML including templated divs for each employee!
 
 async function renderHTML() {
     try {
-        await render(employees);
+        
 
-        fs.writeFile(outputPath, )
+        fs.writeFileSync( outputPath, employees, function(err) {
+            if (err) throw err;
+            console.log(`RENDERHTML and write file IS RUNNING`)
+        })
+        // , function (err) {
+        //     if (err) throw err;
+        // })
     } catch (err) {
         console.log(`Error: ${err}`);
     }
 }
-renderHTML();
+// renderHTML();
 
 
 

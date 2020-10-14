@@ -5,14 +5,13 @@ const Intern = require("./lib/Intern");
 const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
-// const util = require('util');
 
 const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
-// const writeFileAsync = util.promisify(fs.writeFile);
 
+// asks which role to input
 function whichRole() {
 	return inquirer.prompt([
 		{
@@ -36,6 +35,7 @@ function whichRole() {
 		},
 	]);
 }
+//default employee questions
 function employeeQ() {
 	return inquirer.prompt([
 		{
@@ -55,6 +55,7 @@ function employeeQ() {
 		},
 	]);
 }
+// role specific employee questions
 function managerQ() {
 	return inquirer.prompt({
 		type: "input",
@@ -93,37 +94,43 @@ Answer the prompts to customise your team summary page!
 --------------------------------------------------------`);
 
 	try {
+		// prompts the user for input
 		const input = await whichRole();
-        const { name, id, email } = await employeeQ();
-        
+		const { name, id, email } = await employeeQ();
+
+		// asks role specific question, then add employee to 'employees' array
 		if (input.role === "manager") {
-		    const { officeNumber } = await managerQ();
-		    const manager = new Manager(name, id, email, officeNumber)
-		    employees.push(manager)
+			const { officeNumber } = await managerQ();
+			const manager = new Manager(name, id, email, officeNumber);
+			employees.push(manager);
 		} else if (input.role === "engineer") {
-		    const { github } = await engineerQ();
-		    const engineer = new Engineer(name, id, email, github)
-		    employees.push(engineer)
+			const { github } = await engineerQ();
+			const engineer = new Engineer(name, id, email, github);
+			employees.push(engineer);
 		} else {
-		    const { school } = await internQ();
-		    const intern = new Intern(name, id, email, school)
-		    employees.push(intern)
-        }
-        
-        const { again } = await addAnother();
-        if (again === true) {
-            return init();
-        } else {
-            console.log(employees)
-            // render(employees);
-            fs.writeFile(outputPath, render(employees), (err) => {
-                if (err) {
-                    console.log(err)
-                } else {
-                    console.log(`Success! HTML file created. Please see the output folder.`)
-                }
-            })
-        }
+			const { school } = await internQ();
+			const intern = new Intern(name, id, email, school);
+			employees.push(intern);
+		}
+
+		// asks if there is another employee to add
+		const { again } = await addAnother();
+		if (again === true) {
+			return init(); // if yes, loops through init again
+		} else {
+			console.log(employees);
+			// else, it renders the user input as html through 'htmlRenderer.js'
+			// then outputs to the output folder
+			fs.writeFile(outputPath, render(employees), (err) => {
+				if (err) {
+					console.log(err);
+				} else {
+					console.log(
+						`Success! HTML file created. Please see the output folder.`
+					);
+				}
+			});
+		}
 	} catch (err) {
 		console.log(`Error: ${err}`);
 	}
@@ -132,36 +139,3 @@ Answer the prompts to customise your team summary page!
 const employees = [];
 
 init();
-
-// After the user has input all employees desired, call the `render` function (required
-// above) and pass in an array containing all employee objects; the `render` function will
-// generate and return a block of HTML including templated divs for each employee!
-
-async function renderHTML() {
-    try {
-        
-
-        fs.writeFileSync( outputPath, employees, function(err) {
-            if (err) throw err;
-            console.log(`RENDERHTML and write file IS RUNNING`)
-        })
-        // , function (err) {
-        //     if (err) throw err;
-        // })
-    } catch (err) {
-        console.log(`Error: ${err}`);
-    }
-}
-// renderHTML();
-
-
-
-// After you have your html, you're now ready to create an HTML file using the HTML
-// returned from the `render` function. Now write it to a file named `team.html` in the
-// `output` folder. You can use the variable `outputPath` above target this location.
-
-// HINT: make sure to build out your classes first! Remember that your Manager, Engineer,
-// and Intern classes should all extend from a class named Employee; see the directions
-// for further information. Be sure to test out each class and verify it generates an
-// object with the correct structure and methods. This structure will be crucial in order
-// for the provided `render` function to work! ```

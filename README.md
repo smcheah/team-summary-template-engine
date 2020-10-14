@@ -18,6 +18,7 @@ Built for software engineering teams.
 ## Features & Technologies used :sparkles:
 
 -   Unit testing
+-   A focus on OOP and classes
 -   Displays a nicely formatted team roster based on the information provided by the user
 
 | Technology  | Description                                                                  | Link                                   |
